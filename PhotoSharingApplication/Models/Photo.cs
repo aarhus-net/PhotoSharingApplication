@@ -18,7 +18,7 @@ namespace PhotoSharingApplication.Models
         [DataType(DataType.MultilineText)]
         public string Description { get; set; }
         [DataType(DataType.DateTime)]
-        [DisplayFormat(DataFormatString = "{0:MM/dd/yy", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yy}", ApplyFormatInEditMode = true)]
         public DateTime CreatedDate { get; set; }
         public string UserName { get; set; }
 
