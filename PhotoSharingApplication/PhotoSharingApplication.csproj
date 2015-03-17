@@ -88,8 +88,10 @@
   <ItemGroup>
     <Content Include="Global.asax" />
     <Content Include="Images\flower.JPG" />
+    <Content Include="Images\fungi.JPG" />
     <Content Include="Images\orchard.JPG" />
     <Content Include="Images\path.JPG" />
+    <Content Include="Images\pinkflower.JPG" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -108,8 +110,6 @@
   <ItemGroup>
     <Content Include="Views\web.config" />
     <Content Include="packages.config" />
-    <Content Include="Views\Photo\Index.cshtml" />
-    <Content Include="Views\Photo\Display.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
