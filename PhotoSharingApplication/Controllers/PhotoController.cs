@@ -53,6 +53,7 @@ namespace PhotoSharingApplication.Controllers
 
                     image.InputStream.Read(photo.PhotoFile, 0, image.ContentLength);
                     context.Photos.Add(photo);
+                    context.SaveChanges();
                     return RedirectToAction("Index");
                 }
             }
