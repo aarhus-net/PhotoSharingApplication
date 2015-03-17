@@ -100,7 +100,7 @@ namespace PhotoSharingApplication.Controllers
             List<Photo> photos = number != 0
                 ? (from p in context.Photos
                     orderby p.CreatedDate descending
-                    select p).Take(3).ToList()
+                    select p).Take(number).ToList()
                 : context.Photos.ToList();
             return PartialView("_PhotoGallery", photos);
         }
