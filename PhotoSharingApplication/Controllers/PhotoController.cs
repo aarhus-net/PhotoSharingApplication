@@ -12,17 +12,27 @@ namespace PhotoSharingApplication.Controllers
     public class PhotoController : Controller
     {
 
-        private PhotoSharingDB context = new PhotoSharingDB();
+        private IPhotoSharingContext context;
+
+        public PhotoController()
+        {
+            context = new PhotoSharingDB();
+        }
+
+        public PhotoController(IPhotoSharingContext context)
+        {
+            this.context = context;
+        }
 
         // GET: Photo
         public ActionResult Index()
         {
-            return View();
+            return View("Index");
         }
 
         public ActionResult Display(int id)
         {
-            Photo photo = context.Photos.Find(id);
+            Photo photo = context.FindPhotoById(id);
 
             if (photo != null)
             {
@@ -52,7 +62,7 @@ namespace PhotoSharingApplication.Controllers
                     photo.PhotoFile = new byte[image.ContentLength];
 
                     image.InputStream.Read(photo.PhotoFile, 0, image.ContentLength);
-                    context.Photos.Add(photo);
+                    context.Add(photo);
                     context.SaveChanges();
                     return RedirectToAction("Index");
                 }
@@ -63,7 +73,7 @@ namespace PhotoSharingApplication.Controllers
 
         public ActionResult Delete(int id)
         {
-            Photo photo = context.Photos.Find(id);
+            Photo photo = context.FindPhotoById(id);
 
             if (photo != null)
             {
@@ -77,15 +87,15 @@ namespace PhotoSharingApplication.Controllers
         [ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {
-            Photo photo = context.Photos.Find(id);
-            context.Photos.Remove(photo);
+            Photo photo = context.FindPhotoById(id);
+            context.Delete(photo);
             context.SaveChanges();
             return RedirectToAction("Index");
         }
 
         public FileContentResult GetImage(int id)
         {
-            Photo photo = context.Photos.Find(id);
+            Photo photo = context.FindPhotoById(id);
 
             if (photo != null)
             {
