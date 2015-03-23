@@ -44,6 +44,36 @@ namespace PhotoSharingTests
         }
 
         [TestMethod]
+        public void Test_Photo_Route_Without_PhotoID()
+        {
+            var context = new FakeHttpContextForRouting(requestUrl: "~/photo");
+            var routes = new RouteCollection();
+
+            RouteConfig.RegisterRoutes(routes);
+
+            RouteData routeData = routes.GetRouteData(context);
+
+            Assert.IsNotNull(routeData);
+            Assert.AreEqual("photo", routeData.Values["controller"]);
+            Assert.AreEqual("Index", routeData.Values["action"]);
+        }
+
+        [TestMethod]
+        public void Test_Photo_Route_With_invalid_PhotoID()
+        {
+            var context = new FakeHttpContextForRouting(requestUrl: "~/photo/aab");
+            var routes = new RouteCollection();
+
+            RouteConfig.RegisterRoutes(routes);
+
+            RouteData routeData = routes.GetRouteData(context);
+
+            Assert.IsNotNull(routeData);
+            Assert.AreEqual("photo", routeData.Values["controller"]);
+            Assert.AreEqual("aab", routeData.Values["action"]);
+        }
+
+        [TestMethod]
         public void Test_Photo_Title_Route()
         {
             var context = new FakeHttpContextForRouting(requestUrl: "~/photo/title/my%20title");
