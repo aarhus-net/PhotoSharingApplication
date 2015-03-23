@@ -15,7 +15,7 @@ namespace PhotoSharingApplication.Models
             {
                 new Photo()
                 {
-                    Title = "Test Photo",
+                    Title = "Sample Photo 1",
                     Description = "This is a test photo",
                     UserName = "NaokiSato",
                     PhotoFile = getFileBytes("\\Images\\flower.jpg"),
@@ -23,7 +23,7 @@ namespace PhotoSharingApplication.Models
                     CreatedDate = DateTime.Now
                 },
                 new Photo {
-                    Title = "My New Adventure Works Bike",
+                    Title = "Sample Photo 2",
                     Description = "It's the bees knees!",
                     UserName = "Fred",
                     PhotoFile = getFileBytes("\\Images\\orchard.jpg"),
@@ -31,7 +31,7 @@ namespace PhotoSharingApplication.Models
                     CreatedDate = DateTime.Today
                 },
                 new Photo {
-                    Title = "View from the start line",
+                    Title = "Sample Photo 3",
                     Description = "I took this photo just before we started over my handle bars.",
                     UserName = "Sue",
                     PhotoFile = getFileBytes("\\Images\\path.jpg"),

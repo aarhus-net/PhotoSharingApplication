@@ -44,6 +44,18 @@ namespace PhotoSharingApplication.Controllers
             return HttpNotFound();
         }
 
+        public ActionResult DisplayByTitle(string title)
+        {
+            Photo photo = context.FindPhotoByTitle(title);
+
+            if (photo != null)
+            {
+                return View("Display", photo);
+            }
+
+            return HttpNotFound();
+        }
+
         public ActionResult Create()
         {
             Photo photo = new Photo();
@@ -108,12 +120,12 @@ namespace PhotoSharingApplication.Controllers
         }
 
         [ChildActionOnly]
-        public ActionResult _PhotoGallery(int number=0)
+        public ActionResult _PhotoGallery(int number = 0)
         {
             List<Photo> photos = number != 0
                 ? (from p in context.Photos
-                    orderby p.CreatedDate descending
-                    select p).Take(number).ToList()
+                   orderby p.CreatedDate descending
+                   select p).Take(number).ToList()
                 : context.Photos.ToList();
             return PartialView("_PhotoGallery", photos);
         }

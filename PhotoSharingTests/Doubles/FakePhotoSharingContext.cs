@@ -66,6 +66,11 @@ namespace PhotoSharingTests.Doubles
             return entity;
         }
 
+        public Photo FindPhotoByTitle(string title)
+        {
+            return (from p in Photos where p.Title == title select p).FirstOrDefault();
+        }
+
         class SetMap : KeyedCollection<Type, object>
         {
 

@@ -20,5 +20,6 @@ namespace PhotoSharingApplication.Models
         Comment FindCommentById(int id);
 
         T Delete<T>(T entity) where T:class;
+        Photo FindPhotoByTitle(string title);
     }
 }

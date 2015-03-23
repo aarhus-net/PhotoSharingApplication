@@ -45,5 +45,10 @@ namespace PhotoSharingApplication.Models
         {
             return Set<T>().Remove(entity);
         }
+
+        public Photo FindPhotoByTitle(string title)
+        {
+            return (from p in Photos where p.Title == title select p).FirstOrDefault();
+        }
     }
 }
