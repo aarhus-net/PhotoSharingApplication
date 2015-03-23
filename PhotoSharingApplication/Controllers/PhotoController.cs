@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Web;
@@ -9,6 +10,7 @@ using PhotoSharingApplication.Models;
 namespace PhotoSharingApplication.Controllers
 {
     [ValueReporter]
+    [HandleError(View = "Error")]
     public class PhotoController : Controller
     {
 
@@ -114,6 +116,11 @@ namespace PhotoSharingApplication.Controllers
                     select p).Take(number).ToList()
                 : context.Photos.ToList();
             return PartialView("_PhotoGallery", photos);
+        }
+
+        public ActionResult SlideShow()
+        {
+            throw new NotImplementedException("The SlideShow is not yet ready!");
         }
     }
 }
