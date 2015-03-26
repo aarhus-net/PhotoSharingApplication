@@ -50,5 +50,13 @@ namespace PhotoSharingApplication.Models
         {
             return (from p in Photos where p.Title == title select p).FirstOrDefault();
         }
+
+        public IEnumerable<Comment> FindCommentsForPhotoId(int photoId)
+        {
+            return (from c in Comments
+                          where c.PhotoId == photoId
+                          select c).ToList();
+
+        }
     }
 }

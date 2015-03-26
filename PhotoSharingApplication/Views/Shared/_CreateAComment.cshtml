@@ -1,0 +1,15 @@
+﻿@model PhotoSharingApplication.Models.Comment
+
+@Html.ValidationSummary( true )
+
+<div class="add-comment-box">
+    <div>
+        <span class="editor-label">Subject:</span>
+        <span class="editor-label">@Html.EditorFor(m => m.Subject)</span>
+    </div>
+    <div>
+        <span class="editor-label">Body:</span>
+        <span class="editor-label">@Html.EditorFor(m => m.Body)</span>
+    </div>
+    <input type="submit" value="Create"/>
+</div>

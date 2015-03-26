@@ -21,5 +21,7 @@ namespace PhotoSharingApplication.Models
 
         T Delete<T>(T entity) where T:class;
         Photo FindPhotoByTitle(string title);
+
+        IEnumerable<Comment> FindCommentsForPhotoId(int photoId);
     }
 }
