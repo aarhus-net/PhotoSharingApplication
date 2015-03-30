@@ -29,7 +29,7 @@ function calculateIncrement() {
     $("#slide-show-progress-bar").progressbar({ value: 100 });
 }
 
-$(document).ready(function () {
+$(document).ready(function() {
     calculateIncrement();
     setInterval("slideSwitch()", 5000);
-} )
+});
