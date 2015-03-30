@@ -8,8 +8,10 @@ using PhotoSharingApplication.Models;
 
 namespace PhotoSharingApplication.Controllers
 {
+    [Authorize]
     public class AccountController : Controller
     {
+        [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
@@ -17,6 +19,7 @@ namespace PhotoSharingApplication.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public ActionResult Login(Login model, string returnUrl)
         {
             if (ModelState.IsValid)
@@ -42,12 +45,14 @@ namespace PhotoSharingApplication.Controllers
             return RedirectToAction("Index","Home");
         }
 
+        [AllowAnonymous]
         public ActionResult Register()
         {
             return View("Register");
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public ActionResult Register(Register model)
         {
             if (ModelState.IsValid)

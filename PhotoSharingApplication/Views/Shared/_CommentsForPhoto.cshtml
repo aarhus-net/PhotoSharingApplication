@@ -9,10 +9,16 @@
 
     <div id="comments-tool">
         <h3>Comments</h3>
-
-        <div id="add-comment" class="add-comment-box">
-            @Html.Action("_Create", new {photoId = ViewBag.PhotoId})
-        </div>
+        @if (Request.IsAuthenticated)
+        {
+            <div id="add-comment" class="add-comment-box">
+                @Html.Action("_Create", new {photoId = ViewBag.PhotoId})
+            </div>
+        }
+        else
+        {
+            @Html.ActionLink( "To comment you must login", "Login", "Account" )
+        }
         <div id="all-comments">
             @foreach (var item in Model)
             {
