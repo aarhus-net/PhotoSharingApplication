@@ -15,6 +15,22 @@
 </head>
 <body>
 <h1 class="site-page-title">Adventure Works Photo Sharing</h1>
+<div class="login-controls">
+    @if (Request.IsAuthenticated)
+    {
+        <div>
+            Hello, @User.Identity.Name
+            @Html.ActionLink("Log Off", "LogOff", "Account")
+        </div>
+    }
+    else
+    {
+        <div>
+            @Html.ActionLink("Log In", "Login", "Account")
+            @Html.ActionLink("Register", "Register", "Account")
+        </div>
+    }
+</div>
 <div class="clear-float">
     <div id="topmenu">
         @Html.MvcSiteMap().Menu(false, true, true)
