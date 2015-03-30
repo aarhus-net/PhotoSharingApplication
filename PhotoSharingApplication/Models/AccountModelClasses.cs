@@ -8,7 +8,7 @@ using System.Data.Entity;
 
 namespace PhotoSharingApplication.Models
 {
-    public class UsersContext:DbContext
+    public class UsersContext : DbContext
     {
         public UsersContext() : base("PhotoAppServices") { }
     }
@@ -39,6 +39,23 @@ namespace PhotoSharingApplication.Models
 
         [DataType(DataType.Password)]
         [Compare("Password")]
+        public string ConfirmPassword { get; set; }
+    }
+
+    public class LocalPassword
+    {
+        [DataType(DataType.Password)]
+        [Required]
+        [DisplayName("Current Password")]
+        public string OldPassword { get; set; }
+
+        [DataType(DataType.Password)]
+        [Required]
+        [DisplayName("New Password")]
+        public string NewPassword { get; set; }
+
+        [DataType(DataType.Password)]
+        [Compare("NewPassword")]
         public string ConfirmPassword { get; set; }
     }
 }

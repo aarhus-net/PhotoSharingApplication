@@ -70,5 +70,51 @@ namespace PhotoSharingApplication.Controllers
             }
             return View("Register", model);
         }
+
+        public enum ManageMessageId
+        {
+            ChangePasswordSuccess,
+            SetPasswordSuccess
+        }
+
+        public ActionResult ResetPassword(ManageMessageId? message)
+        {
+            if (message != null)
+            {
+                ViewBag.StatusMessage = "Your password has been changed";
+                ViewBag.ReturnUrl = Url.Action("ResetPassword");
+            }
+
+            return View("ResetPassword");
+        }
+
+        [HttpPost]
+        public ActionResult ResetPassword(LocalPassword model)
+        {
+            ViewBag.ReturnUrl = Url.Action("ResetPassword");
+            if (ModelState.IsValid)
+            {
+                bool changePasswordSucceeded;
+
+                try
+                {
+                    changePasswordSucceeded = Membership.Provider.ChangePassword(User.Identity.Name, model.OldPassword, model.NewPassword);
+                }
+                catch (Exception)
+                {
+                    changePasswordSucceeded = false;
+                }
+
+                if (changePasswordSucceeded)
+                {
+                    return RedirectToAction( "ResetPassword", new { message = ManageMessageId.ChangePasswordSuccess } );
+                }
+
+                ModelState.AddModelError( "", "The current password is incorrect or the new password is invalid" );
+
+            }
+
+            return View("ResetPassword", model);
+        }
     }
 }
