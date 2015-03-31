@@ -1,140 +1,155 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.UI;
+using System.Globalization;
+using PhotoSharingApplication.GeocodeService;
 using PhotoSharingApplication.Models;
 
 namespace PhotoSharingApplication.Controllers
 {
-    [ValueReporter]
     [HandleError(View = "Error")]
+    [ValueReporter]
     public class PhotoController : Controller
     {
-
         private IPhotoSharingContext context;
 
+        //Constructors
         public PhotoController()
         {
-            context = new PhotoSharingDB();
+            context = new PhotoSharingContext();
         }
 
-        public PhotoController(IPhotoSharingContext context)
+        public PhotoController(IPhotoSharingContext Context)
         {
-            this.context = context;
+            context = Context;
         }
 
-        // GET: Photo
-        [OutputCache(Duration = 600, Location = OutputCacheLocation.Server, VaryByParam = "none")]
+        //
+        // GET: /Photo/
         public ActionResult Index()
         {
             return View("Index");
         }
 
+        [ChildActionOnly]
+        public ActionResult _PhotoGallery(int number = 0)
+        {
+            List<Photo> photos;
+
+            if (number == 0)
+            {
+                photos = context.Photos.ToList();
+            }
+            else
+            {
+                photos = (from p in context.Photos
+                          orderby p.CreatedDate descending
+                          select p).Take(number).ToList();
+            }
+
+            return PartialView("_PhotoGallery", photos);
+        }
+
         public ActionResult Display(int id)
         {
             Photo photo = context.FindPhotoById(id);
-
-            if (photo != null)
+            if (photo == null)
             {
-                return View("Display", photo);
+                return HttpNotFound();
             }
-
-            return HttpNotFound();
+            return View("Display", photo);
         }
 
         public ActionResult DisplayByTitle(string title)
         {
             Photo photo = context.FindPhotoByTitle(title);
-
-            if (photo != null)
+            if (photo == null)
             {
-                return View("Display", photo);
+                return HttpNotFound();
             }
-
-            return HttpNotFound();
+            return View("Display", photo);
         }
 
         [Authorize]
         public ActionResult Create()
         {
-            Photo photo = new Photo();
-            photo.CreatedDate = DateTime.Now;
-
-            return View("Create", photo);
+            Photo newPhoto = new Photo();
+            newPhoto.UserName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(User.Identity.Name);
+            newPhoto.CreatedDate = DateTime.Today;
+            return View("Create", newPhoto);
         }
 
-        [HttpPost]
         [Authorize]
+        [HttpPost]
         public ActionResult Create(Photo photo, HttpPostedFileBase image)
         {
-            photo.CreatedDate = DateTime.Now;
-            if (ModelState.IsValid)
+            photo.UserName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(User.Identity.Name);
+            photo.CreatedDate = DateTime.Today;
+            if (photo.Location != "")
+            {
+                string stringLatLong = CheckLocation(photo.Location);
+                if (stringLatLong.StartsWith("Success"))
+                {
+                    char[] splitChars = {':'};
+                    string[] coordinates = stringLatLong.Split(splitChars);
+                    photo.Latitude = coordinates[1];
+                    photo.Longitude = coordinates[2];
+                }
+            }
+            if (!ModelState.IsValid)
+            {
+                return View("Create", photo);
+            }
+            else
             {
                 if (image != null)
                 {
                     photo.ImageMimeType = image.ContentType;
                     photo.PhotoFile = new byte[image.ContentLength];
-
                     image.InputStream.Read(photo.PhotoFile, 0, image.ContentLength);
-                    context.Add(photo);
-                    context.SaveChanges();
-                    return RedirectToAction("Index");
                 }
+                context.Add<Photo>(photo);
+                context.SaveChanges();
+                return RedirectToAction("Index");
             }
-
-            return View("Create", photo);
         }
 
         [Authorize]
         public ActionResult Delete(int id)
         {
             Photo photo = context.FindPhotoById(id);
-
-            if (photo != null)
+            if (photo == null)
             {
-                return View("Delete", photo);
+                return HttpNotFound();
             }
-
-            return HttpNotFound();
+            return View("Delete", photo);
         }
 
+        [Authorize]
         [HttpPost]
         [ActionName("Delete")]
-        [Authorize]
         public ActionResult DeleteConfirmed(int id)
         {
             Photo photo = context.FindPhotoById(id);
-            context.Delete(photo);
+            context.Delete<Photo>(photo);
             context.SaveChanges();
             return RedirectToAction("Index");
         }
 
-        [OutputCache(Duration = 600, Location = OutputCacheLocation.Server, VaryByParam = "id")]
         public FileContentResult GetImage(int id)
         {
             Photo photo = context.FindPhotoById(id);
-
             if (photo != null)
             {
                 return File(photo.PhotoFile, photo.ImageMimeType);
             }
-
-            return null;
-        }
-
-        [ChildActionOnly]
-        public ActionResult _PhotoGallery(int number = 0)
-        {
-            List<Photo> photos = number != 0
-                ? (from p in context.Photos
-                   orderby p.CreatedDate descending
-                   select p).Take(number).ToList()
-                : context.Photos.ToList();
-            return PartialView("_PhotoGallery", photos);
+            else
+            {
+                return null;
+            }
         }
 
         public ActionResult SlideShow()
@@ -142,21 +157,19 @@ namespace PhotoSharingApplication.Controllers
             return View("SlideShow", context.Photos.ToList());
         }
 
-        public ActionResult FavoritesSlideShow()
+        public ActionResult FavoritesSlideshow()
         {
             List<Photo> favPhotos = new List<Photo>();
             List<int> favoriteIds = Session["Favorites"] as List<int>;
-
             if (favoriteIds == null)
             {
                 favoriteIds = new List<int>();
             }
-
             Photo currentPhoto;
 
-            foreach (int favId in favoriteIds)
+            foreach (int favID in favoriteIds)
             {
-                currentPhoto = context.FindPhotoById(favId);
+                currentPhoto = context.FindPhotoById(favID);
                 if (currentPhoto != null)
                 {
                     favPhotos.Add(currentPhoto);
@@ -166,24 +179,79 @@ namespace PhotoSharingApplication.Controllers
             return View("SlideShow", favPhotos);
         }
 
-        public ContentResult AddFavorite(int photoId)
+        public ContentResult AddFavorite(int PhotoID)
         {
-            List<int> favoriteIds = Session["Favorites"] as List<int>;
-
-
-            if (favoriteIds == null)
+            List<int> favorites = Session["Favorites"] as List<int>;
+            if (favorites == null)
             {
-                favoriteIds = new List<int>();
+                favorites = new List<int>();
             }
-
-            favoriteIds.Add(photoId);
-
-            Session["Favorites"] = favoriteIds;
-
+            favorites.Add(PhotoID);
+            Session["Favorites"] = favorites;
             return Content("The picture has been added to your favorites", "text/plain", System.Text.Encoding.Default);
         }
 
+        private string CheckLocation(string location)
+        {
+            string response = "";
+            try
+            {
+                
+                response = GetLocation(location);
+            }
+            catch (Exception e)
+            {
+                response = "Error: " + e.Message;
+            }
+            return response;
+        }
 
+        private string GetLocation(string address)
+        {
+            string results = string.Empty;
 
+            string key = "AjWJ0toEszyIarecyQlnVMkqPJErH5v3iJnV51XSBXzfMwMR4rOVETwGUDmTPYMD";
+
+            try
+            {
+                //Create the geocode request, set the access key and the address to query
+                GeocodeRequest geocodeRequest = new GeocodeRequest();
+                geocodeRequest.Credentials = new GeocodeService.Credentials();
+                geocodeRequest.Credentials.ApplicationId = key;
+                geocodeRequest.Query = address;
+
+                //Create a filter to return only high confidence results
+                ConfidenceFilter[] filters = new ConfidenceFilter[1];
+                filters[0] = new ConfidenceFilter();
+                filters[0].MinimumConfidence = Confidence.High;
+
+                //Apply the filter to the request
+                GeocodeOptions options = new GeocodeOptions();
+                options.Filters = filters;
+                geocodeRequest.Options = options;
+
+                //Make the request
+                GeocodeServiceClient client = new GeocodeServiceClient("BasicHttpBinding_IGeocodeService");
+                GeocodeResponse response = client.Geocode(geocodeRequest);
+
+                if (response.Results.Length > 0)
+                {
+                    results = String.Format("Success: {0}:{1}",
+                        response.Results[0].Locations[0].Latitude,
+                        response.Results[0].Locations[0].Longitude);
+                }
+                else
+                {
+                    results = "No Results Found";
+                }
+            }
+            catch (Exception e)
+            {
+                results = "Geocoding Error: " + e.Message;
+            }
+
+            return results;
+
+        }
     }
 }

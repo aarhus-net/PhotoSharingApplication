@@ -45,16 +45,26 @@ namespace PhotoSharingTests.Doubles
         public Photo FindPhotoById(int ID)
         {
             Photo item = (from p in this.Photos
-                    where p.Id == ID
+                    where p.PhotoID == ID
                     select p).First();
  
             return item;
         }
 
+        public Photo FindPhotoByTitle(string Title)
+        {
+            Photo item = (from p in this.Photos
+                          where p.Title == Title
+                          select p).FirstOrDefault();
+
+            return item;
+        }
+
+
         public Comment FindCommentById(int ID)
         {
             Comment item = (from c in this.Comments
-                          where c.Id == ID
+                          where c.CommentID == ID
                           select c).First();
             return item;
         }
@@ -64,19 +74,6 @@ namespace PhotoSharingTests.Doubles
         {
             _map.Get<T>().Remove(entity);
             return entity;
-        }
-
-        public Photo FindPhotoByTitle(string title)
-        {
-            return (from p in Photos where p.Title == title select p).FirstOrDefault();
-        }
-
-        public IEnumerable<Comment> FindCommentsForPhotoId(int photoId)
-        {
-            return (from c in Comments
-                    where c.PhotoId == photoId
-                    select c).ToList();
-
         }
 
         class SetMap : KeyedCollection<Type, object>

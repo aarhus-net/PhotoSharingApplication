@@ -6,7 +6,7 @@ using System.Web;
 
 namespace PhotoSharingApplication.Models
 {
-    public class PhotoSharingDB :DbContext, IPhotoSharingContext
+    public class PhotoSharingContext : DbContext, IPhotoSharingContext
     {
         public DbSet<Photo> Photos { get; set; }
         public DbSet<Comment> Comments { get; set; }
@@ -31,32 +31,28 @@ namespace PhotoSharingApplication.Models
             return Set<T>().Add(entity);
         }
 
-        Photo IPhotoSharingContext.FindPhotoById(int id)
+        Photo IPhotoSharingContext.FindPhotoById(int ID)
         {
-            return Set<Photo>().Find(id);
+            return Set<Photo>().Find(ID);
         }
 
-        Comment IPhotoSharingContext.FindCommentById(int id)
+        Photo IPhotoSharingContext.FindPhotoByTitle(string Title)
         {
-            return Set<Comment>().Find(id);
+            Photo photo = (from p in Set<Photo>()
+                           where p.Title == Title
+                           select p).FirstOrDefault();
+            return photo;
         }
+
+        Comment IPhotoSharingContext.FindCommentById(int ID)
+        {
+            return Set<Comment>().Find(ID);
+        }
+
 
         T IPhotoSharingContext.Delete<T>(T entity)
         {
             return Set<T>().Remove(entity);
-        }
-
-        public Photo FindPhotoByTitle(string title)
-        {
-            return (from p in Photos where p.Title == title select p).FirstOrDefault();
-        }
-
-        public IEnumerable<Comment> FindCommentsForPhotoId(int photoId)
-        {
-            return (from c in Comments
-                          where c.PhotoId == photoId
-                          select c).ToList();
-
         }
     }
 }

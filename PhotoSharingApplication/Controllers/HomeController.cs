@@ -8,10 +8,13 @@ namespace PhotoSharingApplication.Controllers
 {
     public class HomeController : Controller
     {
-        // GET: Home
+        //
+        // GET: /Home/
+
         public ActionResult Index()
         {
             return View();
         }
+
     }
 }

@@ -14,7 +14,7 @@ namespace PhotoSharingApplication.Controllers
         //Constructors
         public CommentController()
         {
-            context = new PhotoSharingDB();
+            context = new PhotoSharingContext();
         }
 
         public CommentController(IPhotoSharingContext Context)
@@ -23,12 +23,61 @@ namespace PhotoSharingApplication.Controllers
         }
 
         //
+        // GET: A Partial View for displaying in the Photo Details view
+        [ChildActionOnly] //This attribute means the action cannot be accessed from the browser's address bar
+        public PartialViewResult _CommentsForPhoto(int PhotoId)
+        {
+            //The comments for a particular photo have been requested. Get those comments.
+            var comments = from c in context.Comments
+                           where c.PhotoID == PhotoId
+                           select c;
+            //Save the PhotoID in the ViewBag because we'll need it in the view
+            ViewBag.PhotoId = PhotoId;
+            return PartialView(comments.ToList());
+        }
+
+        //
+        //POST: This action creates the comment when the AJAX comment create tool is used
+        [HttpPost]
+        public PartialViewResult _CommentsForPhoto(Comment comment, int PhotoId)
+        {
+
+            //Save the new comment
+            context.Add<Comment>(comment);
+            context.SaveChanges();
+
+            //Get the updated list of comments
+            var comments = from c in context.Comments
+                           where c.PhotoID == PhotoId
+                           select c;
+            //Save the PhotoID in the ViewBag because we'll need it in the view
+            ViewBag.PhotoId = PhotoId;
+            //Return the view with the new list of comments
+            return PartialView("_CommentsForPhoto", comments.ToList());
+        }
+
+        //
+        // GET: /Comment/_Create. A Partial View for displaying the create comment tool as a AJAX partial page update
+        [Authorize]
+        public PartialViewResult _Create(int PhotoId)
+        {
+            //Create the new comment
+            Comment newComment = new Comment();
+            newComment.PhotoID = PhotoId;
+
+            ViewBag.PhotoID = PhotoId;
+            return PartialView("_CreateAComment");
+        }
+
+
+
+        //
         // GET: /Comment/Delete/5
         [Authorize]
         public ActionResult Delete(int id = 0)
         {
             Comment comment = context.FindCommentById(id);
-            ViewBag.PhotoID = comment.PhotoId;
+            ViewBag.PhotoID = comment.PhotoID;
             if (comment == null)
             {
                 return HttpNotFound();
@@ -38,45 +87,14 @@ namespace PhotoSharingApplication.Controllers
 
         //
         // POST: /Comment/Delete/5
-        [HttpPost, ActionName("Delete")]
         [Authorize]
+        [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {
             Comment comment = context.FindCommentById(id);
             context.Delete<Comment>(comment);
             context.SaveChanges();
-            return RedirectToAction("Display", "Photo", new { id = comment.PhotoId });
-        }
-
-        [ChildActionOnly]
-        public PartialViewResult _CommentsForPhoto(int photoId)
-        {
-            ViewBag.PhotoId = photoId;
-
-            return PartialView("_CommentsForPhoto", context.FindCommentsForPhotoId(photoId));
-        }
-
-        [Authorize]
-        public PartialViewResult _Create(int photoId)
-        {
-            Comment comment = new Comment();
-            comment.PhotoId = photoId;
-
-            ViewBag.PhotoId = photoId;
-
-            return PartialView("_CreateAComment", comment);
-        }
-
-        [HttpPost]
-        [Authorize]
-        public PartialViewResult _CommentsForPhoto(Comment comment, int photoId )
-        {
-            context.Add(comment);
-            context.SaveChanges();
-
-            ViewBag.PhotoId = photoId;
-
-            return PartialView("_CommentsForPhoto", context.FindCommentsForPhotoId(photoId));
+            return RedirectToAction("Display", "Photo", new { id = comment.PhotoID });
         }
 
     }

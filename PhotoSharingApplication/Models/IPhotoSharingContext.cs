@@ -10,18 +10,11 @@ namespace PhotoSharingApplication.Models
     {
         IQueryable<Photo> Photos { get; }
         IQueryable<Comment> Comments { get; }
-
         int SaveChanges();
-
-        T Add<T>(T entity) where T:class ;
-
-        Photo FindPhotoById(int id);
-
-        Comment FindCommentById(int id);
-
-        T Delete<T>(T entity) where T:class;
-        Photo FindPhotoByTitle(string title);
-
-        IEnumerable<Comment> FindCommentsForPhotoId(int photoId);
+        T Add<T>(T entity) where T : class;
+        Photo FindPhotoById(int ID);
+        Photo FindPhotoByTitle(string Title);
+        Comment FindCommentById(int ID);
+        T Delete<T>(T entity) where T : class;
     }
 }

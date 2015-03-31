@@ -166,6 +166,7 @@
     border-width: 2px;
     border-style: solid;
     border-radius: 10px;
+    color: #333333;
     padding: 15px;
     margin: 5px;
     height: 650px;
@@ -178,4 +179,24 @@
 
 #slide-show DIV.last-active-card {
     z-index: 9;
+}
+
+#slideshow-progress-bar-container {
+    margin: 5px;
+    width: 834px;
+}
+
+@media only screen and (max-width: 500px) {
+
+    .topmenulink {
+        float: left;
+        background-color: #cccccc;
+        width: 100px;
+        height: 35px;
+        text-align: center;
+        line-height: 2em;
+        border-radius: 5px;
+        margin: 5px;
+    }
+
 }
