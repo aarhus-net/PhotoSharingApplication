@@ -6,6 +6,7 @@
   <mvcSiteMapNode title="Home" controller="Home" action="Index">
     <mvcSiteMapNode title="All Photos" controller="Photo" action="Index" key="AllPhotos"/>
     <mvcSiteMapNode title="Slideshow" visibility="*" controller="Photo" action="SlideShow" />
+    <mvcSiteMapNode title="Favorites" visibility="SiteMapPathHelper,!*" controller="Photo" action="FavoritesSlideShow"/>
    </mvcSiteMapNode>
 
 </mvcSiteMap>
