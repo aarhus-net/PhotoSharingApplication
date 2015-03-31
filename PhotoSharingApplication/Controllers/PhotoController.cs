@@ -28,7 +28,7 @@ namespace PhotoSharingApplication.Controllers
         }
 
         // GET: Photo
-        [OutputCache(Duration = 600, Location = OutputCacheLocation.Server,VaryByParam = "none")]
+        [OutputCache(Duration = 600, Location = OutputCacheLocation.Server, VaryByParam = "none")]
         public ActionResult Index()
         {
             return View("Index");
@@ -141,5 +141,47 @@ namespace PhotoSharingApplication.Controllers
         {
             return View("SlideShow", context.Photos.ToList());
         }
+
+        public ActionResult FavoritesSlideShow()
+        {
+            List<Photo> favPhotos = new List<Photo>();
+            List<int> favoriteIds = Session["Favorites"] as List<int>;
+
+            if (favoriteIds == null)
+            {
+                favoriteIds = new List<int>();
+            }
+
+            Photo currentPhoto;
+
+            foreach (int favId in favoriteIds)
+            {
+                currentPhoto = context.FindPhotoById(favId);
+                if (currentPhoto != null)
+                {
+                    favPhotos.Add(currentPhoto);
+                }
+            }
+
+            return View("SlideShow", favPhotos);
+        }
+
+        public ContentResult AddFavorite(int photoId)
+        {
+            List<int> favoriteIds = Session["Favorites"] as List<int>;
+
+
+            if (favoriteIds == null)
+            {
+                favoriteIds = new List<int>();
+            }
+
+            favoriteIds.Add(photoId);
+
+            Session["Favorites"] = favoriteIds;
+
+            return Content("The picture has been added to your favorites", "text/plain", System.Text.Encoding.Default);
+        }
+
     }
 }

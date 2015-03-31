@@ -116,5 +116,6 @@ namespace PhotoSharingApplication.Controllers
 
             return View("ResetPassword", model);
         }
+
     }
 }
